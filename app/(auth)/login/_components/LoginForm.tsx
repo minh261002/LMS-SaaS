@@ -1,6 +1,6 @@
 "use client"
 
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -10,10 +10,15 @@ import { ErrorContext } from 'better-auth/react'
 import { Loader2, MailIcon } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 const LoginForm = () => {
+    const router = useRouter();
 
     const [isGooglePending, startGoogleTransition] = useTransition();
+    const [isEmailPending, startEmailTransition] = useTransition();
+    const [email, setEmail] = useState<string>("");
+
 
     async function handleGoogleSignIn() {
         startGoogleTransition(async () => {
@@ -31,9 +36,28 @@ const LoginForm = () => {
             });
         })
     }
+
+    async function handleEmailSignIn() {
+        startEmailTransition(async () => {
+            await authClient.emailOtp.sendVerificationOtp({
+                email: email,
+                type: "sign-in",
+                fetchOptions: {
+                    onSuccess: () => {
+                        toast.success("OTP sent to email");
+                        router.push(`/verify-request?email=${email}`);
+                    },
+                    onError: (error: ErrorContext) => {
+                        toast.error(error.error?.message || "Failed to send OTP");
+                    },
+                },
+            });
+        })
+    }
+
     return (
         <Card>
-            <CardHeader>
+            <CardHeader className='text-center'>
                 <CardTitle className='text-xl'>Welcome back !</CardTitle>
                 <CardDescription>Login with Email or Google Account to continue</CardDescription>
             </CardHeader>
@@ -64,13 +88,25 @@ const LoginForm = () => {
                             id='email'
                             placeholder='Enter your email'
                             type='email'
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
                 </div>
 
-                <Button className='w-full cursor-pointer'>
-                    <MailIcon className="size-4 mr-2" />
-                    Continue with Email
+                <Button
+                    onClick={handleEmailSignIn}
+                    className='w-full cursor-pointer'
+                    disabled={isEmailPending || !email}
+                >
+                    {isEmailPending ? (
+                        <Loader2 className='size-4 mr-2 animate-spin' />
+                    ) : (
+                        <>
+                            <MailIcon className="size-4 mr-2" />
+                            Continue with Email
+                        </>
+                    )}
                 </Button>
             </CardContent>
         </Card>
