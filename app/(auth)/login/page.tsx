@@ -1,11 +1,36 @@
+"use client"
+
+import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { MailIcon } from 'lucide-react'
+import { authClient } from '@/providers/auth-client'
+import { ErrorContext } from 'better-auth/react'
+import { Loader2, MailIcon } from 'lucide-react'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 const LoginPage = () => {
+
+    const [isGooglePending, startGoogleTransition] = useTransition();
+
+    async function handleGoogleSignIn() {
+        startGoogleTransition(async () => {
+            await authClient.signIn.social({
+                provider: "google",
+                callbackURL: "/",
+                fetchOptions: {
+                    onSuccess: () => {
+                        toast.success("Login successful, redirecting...");
+                    },
+                    onError: (error: ErrorContext) => {
+                        toast.error(error.error?.message || "Login failed, please try again.");
+                    },
+                },
+            });
+        })
+    }
     return (
         <Card>
             <CardHeader>
@@ -13,8 +38,19 @@ const LoginPage = () => {
                 <CardDescription>Login with Email or Google Account to continue</CardDescription>
             </CardHeader>
             <CardContent className='flex flex-col gap-4'>
-                <Button className='w-full cursor-pointer' variant='outline'>
-                    <Image src="/images/google.png" alt="google" width={20} height={20} className='mr-2' />   Continue with Google
+                <Button onClick={handleGoogleSignIn}
+                    className='w-full cursor-pointer'
+                    variant='outline'
+                    disabled={isGooglePending}
+                >
+
+                    {isGooglePending ? (
+                        <Loader2 className='size-4 mr-2 animate-spin' />
+                    ) : (
+                        <>
+                            <Image src="/images/google.png" alt="google" width={20} height={20} className='mr-2' />   Continue with Google
+                        </>
+                    )}
                 </Button>
 
                 <div className='relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border'>
