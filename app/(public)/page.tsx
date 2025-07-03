@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 
 interface featureProps {
   title: string
@@ -964,14 +965,20 @@ const HomePage = () => {
               className="flex flex-wrap justify-center items-center gap-8 opacity-60"
               variants={staggerContainer}
             >
-              {["Google", "Microsoft", "Apple", "Amazon", "Meta", "Netflix"].map((company, index) => (
+              {["/images/kms.png",
+                "/images/vnpay.svg",
+                "/images/netflix.png",
+                "/images/amazon.png",
+                "/images/google_full.png",
+                "/images/airbnb.png",
+              ].map((company, index) => (
                 <motion.div
                   key={index}
                   variants={scaleIn}
                   whileHover={{ scale: 1.1, opacity: 1 }}
                   className="text-2xl font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 >
-                  {company}
+                  <Image src={company} alt={company} width={100} height={100} />
                 </motion.div>
               ))}
             </motion.div>
