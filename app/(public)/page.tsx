@@ -1,8 +1,10 @@
 "use client"
 
 import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
@@ -301,27 +303,26 @@ const HomePage = () => {
           </motion.p>
 
           <motion.div
-            className='flex flex-col sm:flex-row gap-6 mt-12'
+            className='flex flex-col sm:flex-row gap-4 mt-12'
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
             transition={{ delay: 0.6 }}
           >
             <motion.div variants={scaleIn}>
-              <Link href="/courses" className={`${buttonVariants({
-                size: 'lg',
-              })} bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl`}>
-                🎯 Explore Courses
-              </Link>
+              <Button size="lg" asChild className="bg-primary hover:bg-primary/90">
+                <Link href="/courses">
+                  🎯 Explore Courses
+                </Link>
+              </Button>
             </motion.div>
 
             <motion.div variants={scaleIn}>
-              <Link href="/login" className={`${buttonVariants({
-                size: 'lg',
-                variant: 'outline',
-              })} border-2 backdrop-blur-sm bg-white/10 hover:bg-white/20 shadow-lg hover:shadow-xl`}>
-                ⚡ Start Learning
-              </Link>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/login">
+                  ⚡ Start Learning
+                </Link>
+              </Button>
             </motion.div>
           </motion.div>
         </div>
@@ -700,16 +701,18 @@ const HomePage = () => {
                         </motion.li>
                       ))}
                     </ul>
-                    <motion.button
-                      className={`w-full py-3 px-6 rounded-lg font-semibold ${plan.popular
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                        : 'border-2 border-gray-300 hover:border-gray-400'
-                        }`}
+                    <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      Get Started
-                    </motion.button>
+                      <Button
+                        className="w-full"
+                        variant={plan.popular ? "default" : "outline"}
+                        size="lg"
+                      >
+                        Get Started
+                      </Button>
+                    </motion.div>
                   </div>
                 </Card>
               </motion.div>
@@ -775,6 +778,7 @@ const HomePage = () => {
                       <span className="mr-3 text-2xl">🤔</span>
                       {faq.question}
                     </h3>
+                    <Separator className="my-3" />
                     <p className="text-muted-foreground leading-relaxed">
                       {faq.answer}
                     </p>
@@ -817,20 +821,22 @@ const HomePage = () => {
               className='flex flex-col sm:flex-row gap-4 max-w-md mx-auto'
               variants={staggerContainer}
             >
-              <motion.input
-                variants={scaleIn}
-                type="email"
-                placeholder="Enter your email"
-                className="bg-white flex-1 px-6 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
-              <motion.button
+              <motion.div variants={scaleIn} className="flex-1">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="h-10 bg-white text-gray-900"
+                />
+              </motion.div>
+              <motion.div
                 variants={scaleIn}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
               >
-                Subscribe 🚀
-              </motion.button>
+                <Button variant="secondary" size="lg">
+                  Subscribe 🚀
+                </Button>
+              </motion.div>
             </motion.div>
 
             <motion.p
@@ -1010,7 +1016,7 @@ const HomePage = () => {
             Join over 50,000 ambitious learners who are already revolutionizing their careers with our world-class platform
           </motion.p>
           <motion.div
-            className='flex flex-col sm:flex-row gap-6 justify-center'
+            className='flex flex-col sm:flex-row gap-4 justify-center'
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -1018,20 +1024,18 @@ const HomePage = () => {
             transition={{ delay: 0.4 }}
           >
             <motion.div variants={scaleIn}>
-              <Link href="/courses" className={`${buttonVariants({
-                size: 'lg',
-                variant: 'secondary',
-              })} bg-white text-gray-900 hover:bg-gray-100 shadow-2xl text-lg px-8 py-4`}>
-                🚀 Start Your Journey
-              </Link>
+              <Button size="lg" variant="secondary" asChild className="text-lg px-8 py-6">
+                <Link href="/courses">
+                  🚀 Start Your Journey
+                </Link>
+              </Button>
             </motion.div>
             <motion.div variants={scaleIn}>
-              <Link href="/login" className={`${buttonVariants({
-                size: 'lg',
-                variant: 'outline',
-              })} border-2 border-white text-gray-900 hover:bg-white hover:opacity-80 shadow-2xl text-lg px-8 py-4`}>
-                ✨ Free Trial Available
-              </Link>
+              <Button size="lg" variant="outline" asChild className="text-lg px-8 py-6 border-white text-gray-900 hover:bg-white hover:opacity-80">
+                <Link href="/login">
+                  ✨ Free Trial Available
+                </Link>
+              </Button>
             </motion.div>
           </motion.div>
 
