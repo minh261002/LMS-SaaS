@@ -5,7 +5,7 @@ const PublicLayout = ({ children }: { children: React.ReactNode }) => {
     return (
         <div>
             <Navbar />
-            <main className='container mx-auto md:px-6 lg:px-8'>
+            <main className=''>
                 {children}
             </main>
         </div>
