@@ -28,7 +28,7 @@ const HomePage = () => {
     <div>
       {session ? (
         <>
-          <p>{session?.user.name} is logged in</p>
+          <p>{session?.user.email} is logged in</p>
           <Button onClick={handleSignOut}>Sign out</Button>
         </>
       ) : <p>Logged out</p>}

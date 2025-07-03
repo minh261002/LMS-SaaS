@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { RecaptchaProvider } from "@/providers/recaptcha-provider";
 import { Toaster } from "@/components/ui/sonner"
 
 const geistSans = Geist({
@@ -35,7 +36,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <RecaptchaProvider>
+            {children}
+          </RecaptchaProvider>
         </ThemeProvider>
         <Toaster
           position="top-center"

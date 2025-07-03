@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
-import { authClient } from '@/providers/auth-client'
+import { useAuthWithRecaptcha } from '@/hooks/use-auth-with-recaptcha'
 import { ErrorContext } from 'better-auth/react'
 import { Loader2, MailCheckIcon } from 'lucide-react'
 import Link from 'next/link'
@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 const VerifyRequest = () => {
     const [otp, setOtp] = useState('')
     const [emailPending, startEmailTransition] = useTransition()
+    const { signInEmailOtpWithRecaptcha } = useAuthWithRecaptcha()
 
     const params = useSearchParams()
     const router = useRouter()
@@ -24,19 +25,21 @@ const VerifyRequest = () => {
 
     function handleVerify() {
         startEmailTransition(async () => {
-            await authClient.signIn.emailOtp({
-                email: email,
-                otp: otp,
-                fetchOptions: {
+            try {
+                await signInEmailOtpWithRecaptcha({
+                    email: email,
+                    otp: otp,
                     onSuccess: () => {
-                        toast.success('Email verified successfully')
-                        router.push('/')
+                        toast.success('Email verified successfully');
+                        router.push('/');
                     },
                     onError: (error: ErrorContext) => {
-                        toast.error(error.error?.message || 'Failed to verify email')
+                        toast.error(error.error?.message || 'Failed to verify email');
                     }
-                },
-            })
+                });
+            } catch {
+                toast.error("reCAPTCHA verification failed. Please try again.");
+            }
         })
     }
 
@@ -84,6 +87,18 @@ const VerifyRequest = () => {
                 <Link href={`/login?email=${email}`} className='text-sm text-muted-foreground'>
                     Didn&apos;t receive the code? <span className='text-primary'>Resend</span>
                 </Link>
+
+                <p className='text-xs text-muted-foreground text-center mt-2'>
+                    This site is protected by reCAPTCHA and the Google{' '}
+                    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        Privacy Policy
+                    </a>{' '}
+                    and{' '}
+                    <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        Terms of Service
+                    </a>{' '}
+                    apply.
+                </p>
             </CardContent>
         </Card>
     )

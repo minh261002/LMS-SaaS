@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { authClient } from '@/providers/auth-client'
+import { useAuthWithRecaptcha } from '@/hooks/use-auth-with-recaptcha'
 import { ErrorContext } from 'better-auth/react'
 import { Loader2, MailIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation'
 
 const LoginForm = () => {
     const router = useRouter();
+    const { sendVerificationOtpWithRecaptcha, signInSocialWithRecaptcha } = useAuthWithRecaptcha();
 
     const [isGooglePending, startGoogleTransition] = useTransition();
     const [isEmailPending, startEmailTransition] = useTransition();
@@ -22,27 +23,29 @@ const LoginForm = () => {
 
     async function handleGoogleSignIn() {
         startGoogleTransition(async () => {
-            await authClient.signIn.social({
-                provider: "google",
-                callbackURL: "/",
-                fetchOptions: {
+            try {
+                await signInSocialWithRecaptcha({
+                    provider: "google",
+                    callbackURL: "/",
                     onSuccess: () => {
                         toast.success("Login successful, redirecting...");
                     },
                     onError: (error: ErrorContext) => {
                         toast.error(error.error?.message || "Login failed, please try again.");
                     },
-                },
-            });
+                });
+            } catch {
+                toast.error("reCAPTCHA verification failed. Please try again.");
+            }
         })
     }
 
     async function handleEmailSignIn() {
         startEmailTransition(async () => {
-            await authClient.emailOtp.sendVerificationOtp({
-                email: email,
-                type: "sign-in",
-                fetchOptions: {
+            try {
+                await sendVerificationOtpWithRecaptcha({
+                    email: email,
+                    type: "sign-in",
                     onSuccess: () => {
                         toast.success("OTP sent to email");
                         router.push(`/verify-request?email=${email}`);
@@ -50,8 +53,10 @@ const LoginForm = () => {
                     onError: (error: ErrorContext) => {
                         toast.error(error.error?.message || "Failed to send OTP");
                     },
-                },
-            });
+                });
+            } catch {
+                toast.error("reCAPTCHA verification failed. Please try again.");
+            }
         })
     }
 
@@ -108,6 +113,18 @@ const LoginForm = () => {
                         </>
                     )}
                 </Button>
+
+                <p className='text-xs text-muted-foreground text-center mt-2'>
+                    This site is protected by reCAPTCHA and the Google{' '}
+                    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        Privacy Policy
+                    </a>{' '}
+                    and{' '}
+                    <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        Terms of Service
+                    </a>{' '}
+                    apply.
+                </p>
             </CardContent>
         </Card>
     )
