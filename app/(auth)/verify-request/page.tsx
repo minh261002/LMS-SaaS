@@ -8,10 +8,10 @@ import { ErrorContext } from 'better-auth/react'
 import { Loader2, MailCheckIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useTransition } from 'react'
+import { Suspense, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
-const VerifyRequest = () => {
+const VerifyRequestContent = () => {
     const [otp, setOtp] = useState('')
     const [emailPending, startEmailTransition] = useTransition()
     const { signInEmailOtpWithRecaptcha } = useAuthWithRecaptcha()
@@ -101,6 +101,14 @@ const VerifyRequest = () => {
                 </p>
             </CardContent>
         </Card>
+    )
+}
+
+const VerifyRequest = () => {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <VerifyRequestContent />
+        </Suspense>
     )
 }
 
