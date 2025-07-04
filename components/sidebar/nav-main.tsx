@@ -1,6 +1,8 @@
 "use client"
 
 import { type Icon } from "@tabler/icons-react"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 import {
   SidebarGroup,
@@ -21,15 +23,21 @@ export function NavMain({
     icon?: Icon
   }[]
 }) {
+  const pathname = usePathname()
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
-            <Link href="/dashboard" className="w-full">
+            <Link href="/admin" className="w-full">
               <SidebarMenuButton
                 tooltip="Dashboard"
-                className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+                isActive={pathname === "/admin"}
+                className={cn(
+                  "cursor-pointer min-w-8 duration-200 ease-linear",
+                  pathname === "/admin" && "!bg-blue-500 !text-white hover:!bg-blue-500/90 hover:!text-white"
+                )}
               >
                 <LayoutDashboardIcon />
                 <span>Dashboard</span>
@@ -40,9 +48,19 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
+              <SidebarMenuButton
+                tooltip={item.title}
+                asChild
+                isActive={pathname === item.url}
+                className={cn(
+                  "cursor-pointer",
+                  pathname === item.url && "!bg-blue-500 !text-white hover:!bg-blue-500/90 hover:!text-white"
+                )}
+              >
+                <Link href={item.url}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
