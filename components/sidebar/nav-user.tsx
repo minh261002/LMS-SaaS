@@ -29,6 +29,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { type User } from "better-auth"
+import { useSignOut } from "@/hooks/use-signout"
 
 export function NavUser({
   user,
@@ -36,7 +37,7 @@ export function NavUser({
   user: User | null
 }) {
   const { isMobile } = useSidebar()
-
+  const { handleSignOut } = useSignOut();
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -95,7 +96,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
               <IconLogout />
               Log out
             </DropdownMenuItem>

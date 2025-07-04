@@ -9,9 +9,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { authClient } from "@/providers/auth-client";
-import { toast } from "sonner";
-import { ErrorContext } from "better-auth/react";
+import { useSignOut } from "@/hooks/use-signout";
 
 
 interface Session {
@@ -36,18 +34,7 @@ interface Session {
 }
 
 const UserDropdown = ({ session }: { session: Session }) => {
-    async function handleSignOut() {
-        await authClient.signOut({
-            fetchOptions: {
-                onSuccess: () => {
-                    toast.success("Signed out successfully")
-                },
-                onError: (error: ErrorContext) => {
-                    toast.error(error.error?.message || "Failed to sign out")
-                },
-            },
-        })
-    }
+    const { handleSignOut } = useSignOut();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
